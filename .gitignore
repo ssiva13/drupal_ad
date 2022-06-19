@@ -1,0 +1,31 @@
+# Patch/diff artifacts.
+*.patch
+*.diff
+*.orig
+*.rej
+interdiff*.txt
+
+# emacs artifacts.
+*~
+\#*\#
+
+# VI swap file.
+*.swp
+
+# Hidden files.
+.DS*
+.project
+
+# Windows links.
+*.lnk
+
+# Temporary files.
+tmp*
+
+# Exclude IDE's project directory.
+nbproject
+.idea
+
+# For Drupal 7, comment the following lines.
+vendor
+core/node_modules
