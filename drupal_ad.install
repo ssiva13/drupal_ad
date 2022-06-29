@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ * Installation file for miniOrange LdapConn Module.
+ */
+
+/**
+ * hook_uninstall not needed.
+ * Configure variables are cleared when module is uninstalled.
+ **/
+
+
+function ldap_auth_uninstall() {
+  \Drupal::service('module_installer')->uninstall(['drupal_ldap']);
+}
+
+function ldap_auth_install(){
+  $config = \Drupal::configFactory()->getEditable('drupal_ad.settings');
+  $config->set('drupal_ldap_inst_time_ref', time());
+  $config->set('drupal_ldap_server_port', '389');
+  $config->set('drupal_ldap_username_attribute', 'samaccountName');
+  $config->save();
+}
