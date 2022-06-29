@@ -6,8 +6,8 @@ system.integration:
   weight: 100
 
 drupal_ad.admin:
-  title: 'Active Directory(LdapConn)'
-  description: 'Configure Active Directory(LdapConn) for Drupal'
+  title: 'Active Directory(Ldap)'
+  description: 'Configure Active Directory(Ldap) for Drupal'
   parent: system.admin_config_system
   route_name: drupal_ad.welcome
   weight: -20

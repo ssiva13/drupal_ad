@@ -9,7 +9,7 @@ drupal_ad.welcome:
 drupal_ad.ldap_config:
   path: 'admin/config/drupal_ad/ldap_config'
   defaults:
-    _title: 'Active Directory / LdapConn Login'
+    _title: 'Active Directory / Ldap Login'
     _form: '\Drupal\drupal_ad\Form\DrupalLdapForm'
   requirements:
     _permission: 'administer site configuration'
