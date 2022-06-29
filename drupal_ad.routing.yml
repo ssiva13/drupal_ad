@@ -1,0 +1,15 @@
+drupal_ad.welcome:
+  path: 'admin/config/drupal_ad'
+  defaults:
+    _controller: '\Drupal\drupal_ad\Controller\LdapController::welcome'
+    _title: 'Active Directory Configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+drupal_ad.ldap_config:
+  path: 'admin/config/drupal_ad/ldap_config'
+  defaults:
+    _title: 'Active Directory / LdapConn Login'
+    _form: '\Drupal\drupal_ad\Form\DrupalLdapForm'
+  requirements:
+    _permission: 'administer site configuration'

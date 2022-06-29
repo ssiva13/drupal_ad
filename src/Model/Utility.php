@@ -1,11 +1,10 @@
 <?php
 
-namespace Drupal\App;
+namespace Drupal\drupal_ad\Model;
 
-use Drupal\app\Support;
+use Drupal\drupal_ad\Model\Support;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\app\handler;
-use Drupal\app\AttributeMapping;
+//use Drupal\drupal_ad\Model\AttributeMapping;
 
 class Utility {
 
@@ -15,7 +14,7 @@ class Utility {
     private $as_binary = true;
     private $sha2len = 32;
 
-    
+
     /**
      * Encrypt.
      */
@@ -78,7 +77,4 @@ class Utility {
         }
         return false;
     }
-
-    // http://worldtimeapi.org/api/timezone
-    // http://worldtimeapi.org/api
 }
