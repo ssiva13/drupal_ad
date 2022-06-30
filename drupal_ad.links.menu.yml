@@ -1,13 +1,6 @@
-system.integration:
-  title: Third Party Integration
-  parent: system.admin_config
-  route_name: system.admin_config_system
-  description: 'Configure Third Party Integration Modules.'
-  weight: 100
-
 drupal_ad.admin:
   title: 'Active Directory(Ldap)'
   description: 'Configure Active Directory(Ldap) for Drupal'
   parent: system.admin_config_system
-  route_name: drupal_ad.welcome
+  route_name: drupal_ad.ldap_config
   weight: -20
