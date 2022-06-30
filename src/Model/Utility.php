@@ -27,9 +27,8 @@ class Utility {
         $iv = openssl_random_pseudo_bytes($ivlen);
         $ciphertext_raw = openssl_encrypt($string, Utility::$cipher, $key, Utility::$options, $iv);
         $hmac = hash_hmac('sha256', $ciphertext_raw, $key, Utility::$as_binary);
-        $ciphertext = base64_encode($iv . $hmac . $ciphertext_raw);
 
-        return $ciphertext;
+        return base64_encode($iv . $hmac . $ciphertext_raw);
     }
 
     public static function decrypt($cipherString){
