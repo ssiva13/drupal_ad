@@ -1,0 +1,74 @@
+drupal_ad.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    drupal_ldap_license_key:
+      type: 'NULL'
+    drupal_ldap_force_auth:
+      type: boolean
+    drupal_ldap_enable_backdoor:
+      type: boolean
+    drupal_ldap_default_relaystate:
+      type: string
+    drupal_ldap_name:
+      type: string
+    drupal_ldap_issuer:
+      type: string
+    drupal_ldap_login_url:
+      type: string
+    drupal_ldap_logout_url:
+      type: string
+    drupal_ldap_x509_certificate:
+      type: string
+    drupal_ldap_response_signed:
+      type: boolean
+    drupal_ldap_assertion_signed:
+      type: boolean
+    drupal_ldap_enable_login:
+      type: boolean
+    drupal_ldap_username_attribute:
+      type: string
+    drupal_ldap_email_attribute:
+      type: string
+    drupal_ldap_disable_autocreate_users:
+      type: boolean
+    drupal_ldap_default_role:
+      type: string
+    drupal_ldap_status:
+      type: string
+    drupal_ldap_tx_id:
+      type: 'NULL'
+    drupal_ldap_base_url:
+      type: string
+    drupal_ldap_directory_server:
+      type: string
+    drupal_ldap_protocol:
+      type: string
+    drupal_ldap_server_address:
+      type: string
+    drupal_ldap_server_port:
+      type: string
+    drupal_ldap_server_username:
+      type: string
+    drupal_ldap_server_password:
+      type: string
+    drupal_ldap_search_base:
+      type: string
+    drupal_ldap_enable_ldap:
+      type: string
+    drupal_ldap_enable_auto_reg:
+      type: string
+    drupal_ldap_enable_auth_admin:
+      type: string
+    drupal_ldap_enable_auth_users:
+      type: string
+    drupal_ldap_enable_role_mapping:
+      type: string
+    drupal_ldap_fname_attribute:
+      type: string
+    drupal_ldap_lname_attribute:
+      type: string
+    drupal_ldap_phone_attribute:
+      type: string
+    drupal_ldap_email_domain_attribute:
+      type: string
