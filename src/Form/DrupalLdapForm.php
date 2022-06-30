@@ -35,8 +35,6 @@ class DrupalLdapForm extends FormBase
      */
     public function buildForm(array $form, FormStateInterface $form_state)
     {
-      global $base_url;
-      $ldap_connect = new LdapConn();
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_disabled', FALSE)->save();
       $form['markup_library'] = array(
         '#attached' => array(
@@ -64,9 +62,6 @@ class DrupalLdapForm extends FormBase
       $form['description'] = [
         '#markup' => '<p>Custom Active Directory(Ldap) for Drupal allows your users to log in to your Drupal site using their Ldap / AD credentials</p>',
       ];
-
-
-
 
       $form['drupal_ldap_tabs'] = [
         '#type' => 'horizontal_tabs',
