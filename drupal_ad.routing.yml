@@ -23,4 +23,10 @@ drupal_ad.search_bases:
   requirements:
     _permission: 'administer site configuration'
 
-
+drupal_ad.search_bases_markup:
+  path: 'admin/config/drupal_ad/search_bases_markup'
+  defaults:
+    _controller: '\Drupal\drupal_ad\Controller\LdapController::ldapSearchBasesMarkUp'
+    _title: 'LDAP Search Bases'
+  requirements:
+    _permission: 'administer site configuration'

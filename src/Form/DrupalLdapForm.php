@@ -6,8 +6,10 @@ use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\drupal_ad\Model\LdapConn;
 use Drupal\drupal_ad\Model\Utility;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,13 +19,13 @@ class DrupalLdapForm extends FormBase
   /**
    * The module handler service.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var ModuleHandlerInterface
    */
-  protected Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler;
+  protected ModuleHandlerInterface $moduleHandler;
 
   public function __construct()
   {
-    $this->moduleHandler = $moduleHandler = \Drupal::service('module_handler');
+    $this->moduleHandler = $moduleHandler = Drupal::service('module_handler');
   }
 
   /**
@@ -74,7 +76,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config'] = [
       '#title' => 'LDAP Configurations',
       '#type' => 'details',
-      '#open' => TRUE,
+      '#open' => FALSE,
       '#group' => 'drupal_ldap_tabs',
       '#attributes' => [
         'class' => ['custom_ldap_form'],
@@ -83,7 +85,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_user_mapping'] = [
       '#title' => 'User Mapping Configuration',
       '#type' => 'details',
-      '#open' => FALSE,
+      '#open' => TRUE,
       '#group' => 'drupal_ldap_tabs',
       '#attributes' => [
         'class' => ['custom_ldap_form'],
@@ -135,13 +137,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config']['drupal_ldap_protocol'] = [
       '#type' => 'select',
       '#title' => 'LDAP Protocol',
-      '#description' => '<a class="use-ajax"
-    data-dialog-options="{&quot;width&quot;:400}"
-    data-dialog-type="modal"
-    href="/drupal/admin/config/drupal_ad/search_bases_markup">
-    First node displayed in modal dialog.
-</a>',
-//      '#description' => "Pick <strong>ldap://</strong> or <strong>ldaps://</strong> from the dropdwon list",
+      '#description' => "Pick <strong>ldap://</strong> or <strong>ldaps://</strong> from the dropdwon list",
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_protocol'),
       '#options' => [
         '' => '-- Select --',
@@ -262,14 +258,9 @@ class DrupalLdapForm extends FormBase
            Provide the distinguished name of the Search Base object. eg. cn=Users,dc=domain,dc=com.
            If you have users in different locations in the directory(OU's), separate the distinguished names of the search base objects by a semi-colon(;). eg. <strong>cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=com</strong>
         </p>",
-      '#title' => "Custom LDAP Search Base (Click Here For
-            <a
-            data-dialog-options='{&quot;width&quot;:400}' data-dialog-type='modal' class='use-ajax'
-            style='text-decoration:none;'
-            href='". \Drupal\Core\Url::fromRoute('drupal_ad.search_bases_markup')->toString()."'
-            id='ldap_searchbases' >
-            <strong> Search Bases / DNs</strong
-            ></a>)",
+      '#title' => "Custom LDAP Search Base - Click Here For
+            <a data-dialog-type='modal' class='use-ajax ajax--link' data-dialog-options='{&quot;width&quot;:600}'
+            href='". Url::fromRoute('drupal_ad.search_bases_markup')->toString()."' id='ldap_searchbases' ><strong> Search Bases / DNs</strong> </a>",
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_base'),
       '#attributes' => [
         'placeholder' => 'cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=org',
@@ -550,10 +541,10 @@ class DrupalLdapForm extends FormBase
     $ldapconn = $ldapConn->getConnection();
     if ($ldapconn) {
       if ($bind = @ldap_bind($ldapconn, $ldapConn->getServeUsername(), $ldapConn->getServePassword())) {
-        \Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_directory_server', $formData["drupal_ldap_directory_server"])->save();
-        \Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_url', $formData["drupal_ldap_server_url"])->save();
-        \Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_protocol', $formData["drupal_ldap_protocol"])->save();
-        \Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_port', $formData["drupal_ldap_server_port"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_directory_server', $formData["drupal_ldap_directory_server"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_url', $formData["drupal_ldap_server_url"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_protocol', $formData["drupal_ldap_protocol"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_port', $formData["drupal_ldap_server_port"])->save();
 
         Utility::add_message('Congratulations, you were able to successfully connect to your LDAP Server.', 'status');
       }else{
