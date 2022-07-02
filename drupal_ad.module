@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Module file for Drupal ldap Module.
+ */
+
+function drupal_ad_preprocess_node__page(array &$variables) : void {
+  $variables['#attached']['library'][] = 'core/jquery';
+  $variables['#attached']['library'][] = 'core/drupal.dialog.ajax';
+  $variables['#attached']['library'][] = 'field_group/formatter.horizontal_tabs';
+}
+

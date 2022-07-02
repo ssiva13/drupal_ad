@@ -3,17 +3,8 @@ drupal_ad.admin:
   css:
     layout:
       assets/css/drupal_ldap.admin.css: {}
-
-drupal_ad.style_settings:
-  version: VERSION
-  css:
-    layout:
-      assets/css/drupal_ldap.style_settings.css: {}
-
-drupal_ad.main:
-  version: VERSION
-  css:
-    layout:
-      assets/css/drupal_ldap.main.css: {}
   js:
     assets/js/drupal_ldap.main.js : {}
+  dependencies:
+    - core/jquery
+    - core/drupal.dialog
