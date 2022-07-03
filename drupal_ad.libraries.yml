@@ -7,4 +7,5 @@ drupal_ad.admin:
     assets/js/drupal_ldap.main.js : {}
   dependencies:
     - core/jquery
-    - core/drupal.dialog
+    - core/drupal.dialog.ajax
+    - core/fontawesome

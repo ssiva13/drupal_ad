@@ -2,14 +2,14 @@
 
 namespace Drupal\drupal_ad\Controller;
 
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormState;
 use Drupal\drupal_ad\Model\LdapConn;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class LdapController
+class LdapController extends ControllerBase
 {
-
-
   public function drupalUserRoles()
   {
     return new JsonResponse(array(
@@ -30,19 +30,17 @@ class LdapController
    * @throws \Drupal\Core\Form\FormAjaxException
    * @throws \Drupal\Core\Form\EnforcedResponseException
    */
-  public function ldapSearchBasesMarkUp()
-  {
+  public function ldapSearchBasesMarkUp(): array {
     $ldapConn = new LdapConn();
     $possibleSearchBases = $ldapConn->getSearchBases();
-    $searchBasesList = '<p>Here are some possible ldap search bases in your directory. Copy and paste in custom search base field!</p>';
-    $searchBasesList .= '<div class="container-fluid"><ol class="list--group list-group-numbered">';
+    $searchBasesList = '<p class="message message--primary">Here are some possible ldap search bases in your directory. Click to copy and paste in custom search base field! -  '. count($possibleSearchBases) .' ldap search bases</p>';
+    $searchBasesList .= '<div class="container-fluid"><ol class="list--group list--group-numbered">';
     foreach ($possibleSearchBases as $possibleSearchBase){
-      $searchBasesList .= '<li class="list--group-item">'. $possibleSearchBase .'</li>';
+      $searchBasesList .= '<li title="Copy  '. $possibleSearchBase .' " class="list--group-item d--flex js--listcopybtn" > '. $possibleSearchBase .'  <i class="fas fa-clipboard list--btn"></i> </li>';
     }
     $searchBasesList .= '</ol></div>';
     return [
       '#markup' => $searchBasesList,
-      '#description' => '<p>This is html markup</p>',
     ];
   }
 
