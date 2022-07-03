@@ -64,7 +64,7 @@ class DrupalLdapForm extends FormBase
     }
 
     $form['description'] = [
-      '#markup' => '<p>Custom Active Directory(Ldap) for Drupal allows your users to log in to your Drupal site using their Ldap / AD credentials</p>',
+      '#markup' => '<p>Custom Active Directory (ldap) for Drupal allows your users to log in to your Drupal site using their Ldap / AD credentials</p>',
     ];
 
     $form['drupal_ldap_tabs'] = [
@@ -85,11 +85,17 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_user_mapping'] = [
       '#title' => 'User Mapping Configuration',
       '#type' => 'details',
-      '#open' => TRUE,
+      '#open' => FALSE,
       '#group' => 'drupal_ldap_tabs',
       '#attributes' => [
         'class' => ['custom_ldap_form'],
       ],
+    ];
+    $form['drupal_ldap_attribute_mapping'] = [
+      '#title' => 'User Attribute Mapping (LDAP)',
+      '#type' => 'details',
+      '#group' => 'drupal_ldap_tabs',
+      '#open' => FALSE,
     ];
     $form['drupal_ldap_test_auth'] = [
       '#title' => 'Test Authentication',
@@ -100,7 +106,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_options'] = [
       '#title' => 'LDAP Sign in Options',
       '#type' => 'details',
-      '#open' => FALSE,
+      '#open' => TRUE,
       '#group' => 'drupal_ldap_tabs',
     ];
     $form['drupal_ldap_role_mapping'] = [
@@ -108,12 +114,6 @@ class DrupalLdapForm extends FormBase
       '#type' => 'details',
       '#open' => FALSE,
       '#group' => 'drupal_ldap_tabs',
-    ];
-    $form['drupal_ldap_attribute_mapping'] = [
-      '#title' => 'Attribute Mapping (LDAP)',
-      '#type' => 'details',
-      '#group' => 'drupal_ldap_tabs',
-      '#open' => FALSE,
     ];
 //      drupal_ldap_tabs
 
@@ -199,7 +199,7 @@ class DrupalLdapForm extends FormBase
         ["drupal_ldap_server_username"],
       ],
       '#attributes' => [
-        'class' => ['btn--success'],
+        'class' => ['btn--error'],
       ],
     ];
     $form['drupal_ldap_config']['drupal_ldap_save_configuration'] = [
@@ -236,16 +236,13 @@ class DrupalLdapForm extends FormBase
         </p>",
       '#title' => 'LDAP Search Base',
       '#validated' => TRUE,
-      '#options' => [
-        'custom_base' => 'Provide Custom LDAP Search Base'
-      ],
       '#ajax' => [
-        'callback' => '::CustomSearchBaseAjax',
+        'callback' => '::SearchBaseAjax',
         'disable-refocus' => TRUE,
         'event' => 'change',
         'wrapper' => 'drupal_ldap_custom_base', // This element is updated with this AJAX callback.
         'progress' => [
-          'message' => $this->t('Updating...'),
+          'message' => 'Updating...',
         ],
       ],
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_search_base'),
@@ -259,11 +256,13 @@ class DrupalLdapForm extends FormBase
            If you have users in different locations in the directory(OU's), separate the distinguished names of the search base objects by a semi-colon(;). eg. <strong>cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=com</strong>
         </p>",
       '#title' => "Custom LDAP Search Base - Click Here For
-            <a data-dialog-type='modal' class='use-ajax ajax--link' data-dialog-options='{&quot;width&quot;:600}'
-            href='". Url::fromRoute('drupal_ad.search_bases_markup')->toString()."' id='ldap_searchbases' ><strong> Search Bases / DNs</strong> </a>",
+            <a data-dialog-type='modal' class='use-ajax ajax--link' data-dialog-options='{&quot;width&quot;:600}' data-ajax-progres='fullscreen' data-ajax-focus=''
+            href='". Url::fromRoute('drupal_ad.search_bases_markup')->toString()."' methods='GET' ><strong> Search Bases / DNs</strong> </a>",
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_base'),
       '#attributes' => [
         'placeholder' => 'cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=org',
+        'readonly' => true,
+        'class' => ['custom--input-ro']
       ],
     ];
     $form['drupal_ldap_user_mapping']['drupal_ldap_username_attribute'] = [
@@ -279,23 +278,37 @@ class DrupalLdapForm extends FormBase
         'cn' => 'cn',
         'custom' => 'Provide Custom LDAP attribute name',
       ],
-      '#attributes' => [
-
+      '#ajax' => [
+        'callback' => '::SearchFilterAjax',
+        'disable-refocus' => TRUE,
+        'event' => 'change',
+        'wrapper' => 'custom_username_attribute', // This element is updated with this AJAX callback.
+        'progress' => [
+          'message' => 'Updating...',
+        ],
       ],
     ];
-    $form['drupal_ldap_user_mapping']['drupal_ldap_test_user_mapping'] = [
-      '#type' => 'submit',
-      '#prefix' => '<br>',
-      '#value' => t('Test User Mapping'),
-      '#submit' => ['::drupal_ldap_test_user_mapping'],
+    $form['drupal_ldap_user_mapping']['drupal_ldap_custom_username_attribute'] = [
+      '#type' => 'textfield',
+      '#title' => 'Custom Search Filter/Username Attribute',
+      '#id' => 'custom_username_attribute',
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_username_attribute'),
       '#attributes' => [
-        'class' => ['btn--success'],
+        'readonly' => true,
+        'class' => ['custom--input-ro']
       ],
     ];
     $form['drupal_ldap_user_mapping']['drupal_ldap_save_user_mapping'] = [
       '#type' => 'submit',
       '#value' => 'Save User Mapping',
-      '#submit' => ['::drupal_ldap_save_user_mapping'],
+      '#submit' => ['::saveUserMapping'],
+      '#validate' => ['::ldapConfigValidate'],
+      '#limit_validation_errors' => [
+        ["drupal_ldap_search_base"],
+        ["drupal_ldap_custom_base"],
+        ["drupal_ldap_username_attribute"],
+        ["drupal_ldap_custom_username_attribute"],
+      ],
       '#attributes' => [
         'class' => ['btn--primary'],
         'style' => 'float:right;'
@@ -309,14 +322,14 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_test_auth']['drupal_ldap_test_username'] = [
       '#type' => 'textfield',
-      '#title' => 'Test Username',
+      '#title' => 'Test Username-'. Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_username_attribute'),
       '#attributes' => [
         'placeholder' => 'Username',
       ],
     ];
     $form['drupal_ldap_test_auth']['drupal_ldap_test_password'] = [
-      '#type' => 'textfield',
-      '#title' => 'Test Password',
+      '#type' => 'password',
+      '#title' => 'Test Password -' . Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_base'),
       '#attributes' => [
         'placeholder' => 'Password',
       ],
@@ -325,9 +338,15 @@ class DrupalLdapForm extends FormBase
       '#type' => 'submit',
       '#prefix' => '<br>',
       '#value' => t('Test Authentication'),
-      '#submit' => ['::drupal_ldap_test_auth'],
+      '#submit' => ['::ldapTestAuth'],
+      '#validate' => ['::ldapConfigValidate'],
+      '#limit_validation_errors' => [
+        ["drupal_ldap_test_username"],
+        ["drupal_ldap_test_password"],
+      ],
       '#attributes' => [
         'class' => ['btn--primary'],
+        'style' => 'float:right;'
       ],
     ];
 //      drupal_ldap_test_auth
@@ -341,7 +360,7 @@ class DrupalLdapForm extends FormBase
       '#suffix' => '</div>',
       '#type' => 'checkbox',
       '#description' => 'Enabling LDAP login will protect your login page by your configured LDAP. Please check this only after you have successfully tested your configuration as the default Drupal login will stop working',
-      '#title' => 'Enable Login with LDAP ',
+      '#title' => 'Enable Login with LDAP.',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_ldap'),
       '#attributes' => [
         'class' => ['switch']
@@ -352,7 +371,7 @@ class DrupalLdapForm extends FormBase
       '#suffix' => '</div>',
       '#type' => 'checkbox',
       '#title' => 'Enable Auto Registering users if they do not exist.',
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('ldap_enable_auto_reg'),
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_auto_reg'),
       '#attributes' => [
         'class' => ['switch']
       ]
@@ -362,7 +381,7 @@ class DrupalLdapForm extends FormBase
       '#suffix' => '</div>',
       '#type' => 'checkbox',
       '#title' => ' Authenticate Administrators from both LDAP and Drupal.',
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('ldap_enable_auth_admin'),
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_auth_admin'),
       '#attributes' => [
         'class' => ['switch']
       ]
@@ -381,10 +400,18 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_options']['drupal_ldap_save_options'] = [
       '#type' => 'submit',
       '#prefix' => '<br>',
-      '#value' => t('Save Options'),
-      '#submit' => ['::drupal_ldap_save_options'],
+      '#value' => t('Save Sign In Options'),
+      '#submit' => ['::ldapSigninOptions'],
+//      '#validate' => ['::ldapConfigValidate'],
+//      '#limit_validation_errors' => [
+//        ["drupal_ldap_enable_ldap"],
+//        ["drupal_ldap_enable_auto_reg"],
+//        ["drupal_ldap_enable_auth_admin"],
+//        ["drupal_ldap_enable_auth_users"],
+//      ],
       '#attributes' => [
         'class' => ['btn--primary'],
+        'style' => 'float:right;'
       ],
     ];
 //      drupal_ldap_options
@@ -407,16 +434,22 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_role_mapping']['drupal_ldap_default_role'] = [
       '#type' => 'select',
       '#title' => 'Default Role Mapping',
-      '#options' => user_role_names(),
+      '#options' => array_merge(['' => ' -- Select -- '], user_role_names()),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_default_role'),
     ];
     $form['drupal_ldap_role_mapping']['drupal_ldap_save_role_mapping'] = [
       '#type' => 'submit',
       '#prefix' => '<br>',
-      '#value' => t('Save Options'),
-      '#submit' => ['::drupal_ldap_save_role_mapping'],
+      '#value' => t('Save Role Mapping'),
+      '#submit' => ['::ldapRoleMapping'],
+      '#validate' => ['::ldapConfigValidate'],
+      '#limit_validation_errors' => [
+        ["drupal_ldap_enable_role_mapping"],
+        ["drupal_ldap_default_role"],
+      ],
       '#attributes' => [
         'class' => ['btn--primary'],
+        'style' => 'float:right;'
       ],
     ];
 //      drupal_ldap_role_mapping
@@ -452,7 +485,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_attribute_mapping']['drupal_ldap_phone_attribute'] = [
       '#type' => 'textfield',
       '#title' => 'Phone Attribute',
-      '#default_value' => Drupal::config('drupal_ldap.settings')->get('drupal_ldap_phone_attribute'),
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_phone_attribute'),
       '#attributes' => [
         'placeholder' => 'Phone Attribute',
       ],
@@ -460,7 +493,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_attribute_mapping']['drupal_ldap_email_domain_attribute'] = [
       '#type' => 'textfield',
       '#title' => 'Email Domain Attribute',
-      '#default_value' => Drupal::config('drupal_ldap.settings')->get('drupal_ldap_email_domain_attribute'),
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_email_domain_attribute'),
       '#attributes' => [
         'placeholder' => '@domain.com',
       ],
@@ -468,9 +501,18 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_attribute_mapping']['drupal_ldap_save_attribute_mapping'] = [
       '#type' => 'submit',
       '#value' => t('Save Attribute Mapping'),
-      '#submit' => ['::drupal_ldap_save_attribute_mapping'],
+      '#submit' => ['::ldapAttributeMapping'],
+      '#validate' => ['::ldapConfigValidate'],
+      '#limit_validation_errors' => [
+        ["drupal_ldap_email_attribute"],
+        ["drupal_ldap_fname_attribute"],
+        ["drupal_ldap_lname_attribute"],
+        ["drupal_ldap_phone_attribute"],
+        ["drupal_ldap_email_domain_attribute"],
+      ],
       '#attributes' => [
         'class' => ['btn--primary'],
+        'style' => 'float:right;'
       ],
     ];
 //      drupal_ldap_attribute_mapping
@@ -489,9 +531,14 @@ class DrupalLdapForm extends FormBase
   }
 
   // custom form submission methods
-  public function CustomSearchBaseAjax(array &$form, FormStateInterface $form_state) {
-    $selectedValue = $form_state->getValue('drupal_ldap_search_base') === 'custom_base' ? '' : $form_state->getValue('drupal_ldap_search_base');
-    return (new AjaxResponse())->addCommand(new InvokeCommand(NULL, 'myAjaxCallback', [ $selectedValue ]));
+  public function SearchBaseAjax(array &$form, FormStateInterface $form_state): AjaxResponse {
+    $selectedValue = $form_state->getValue('drupal_ldap_search_base');
+    return (new AjaxResponse())->addCommand(new InvokeCommand(NULL, 'SearchBaseAjax', [ $selectedValue ]));
+  }
+
+  public function SearchFilterAjax(array &$form, FormStateInterface $form_state): AjaxResponse {
+    $selectedValue = $form_state->getValue('drupal_ldap_username_attribute');
+    return (new AjaxResponse())->addCommand(new InvokeCommand(NULL, 'SearchFilterAjax', [ $selectedValue ]));
   }
 
   /**
@@ -518,8 +565,8 @@ class DrupalLdapForm extends FormBase
     $ldapConn->setServerPassword($formData["drupal_ldap_server_password"]);
     $ldapServerAddress = $formData["drupal_ldap_protocol"] . $formData["drupal_ldap_server_url"] . ':' . $formData["drupal_ldap_server_port"];
     $ldapConn->setServerName($ldapServerAddress);
-    $ldapconn = $ldapConn->getConnection();
-    if ($ldapconn) {
+    $ldapConnection = $ldapConn->getConnection();
+    if ($ldapConnection) {
       Utility::add_message('Congratulations, you were able to successfully connect to your LDAP Server!', 'status');
     } else {
       Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
@@ -528,7 +575,7 @@ class DrupalLdapForm extends FormBase
 
   /**
    * Form submission handeler handler for $form['drupal_ldap_config']
-   * This methid tests the connection to the ldap server using the provided credentials and saves them.
+   * This method tests the connection to the ldap server using the provided credentials and saves them.
    */
   public function ldapSaveConfig(array &$form, FormStateInterface $form_state)
   {
@@ -538,9 +585,9 @@ class DrupalLdapForm extends FormBase
     $ldapConn->setServerPassword($formData["drupal_ldap_server_password"], true);
     $ldapServerAddress = $formData["drupal_ldap_protocol"] . $formData["drupal_ldap_server_url"] . ':' . $formData["drupal_ldap_server_port"];
     $ldapConn->setServerName($ldapServerAddress, true);
-    $ldapconn = $ldapConn->getConnection();
-    if ($ldapconn) {
-      if ($bind = @ldap_bind($ldapconn, $ldapConn->getServeUsername(), $ldapConn->getServePassword())) {
+    $ldapConnection = $ldapConn->getConnection();
+    if ($ldapConnection) {
+      if ($bind = @ldap_bind($ldapConnection, $ldapConn->getServeUsername(), $ldapConn->getServePassword())) {
         Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_directory_server', $formData["drupal_ldap_directory_server"])->save();
         Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_url', $formData["drupal_ldap_server_url"])->save();
         Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_protocol', $formData["drupal_ldap_protocol"])->save();
@@ -550,6 +597,104 @@ class DrupalLdapForm extends FormBase
       }else{
         Utility::add_message('Invalid credentials to your LDAP Server, contact the administrator.', 'warning');
       }
+    } else {
+      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+    }
+  }
+
+  /**
+   * Form submission handeler handler for $form['drupal_ldap_user_mapping']
+   * This methid tests the connection to the ldap server using the provided credentials and saves them.
+   */
+  public function saveUserMapping(array &$form, FormStateInterface $form_state)
+  {
+    $formData = $form_state->getValues();
+    $ldapConn = new LdapConn();
+    $ldapConnection = $ldapConn->getConnection();
+    if ($ldapConnection) {
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_search_base', $formData["drupal_ldap_search_base"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_custom_base', $formData["drupal_ldap_custom_base"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_username_attribute', $formData["drupal_ldap_username_attribute"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_custom_username_attribute', $formData["drupal_ldap_custom_username_attribute"])->save();
+
+        Utility::add_message('Congratulations, LDAP server user mapping saved successfully.', 'status');
+    } else {
+      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+    }
+  }
+
+  /**
+   * Form submission handeler handler for $form['drupal_ldap_test_auth']
+   * This methid tests the connection to the ldap server using the provided credentials and saves them.
+   */
+  public function ldapTestAuth(array &$form, FormStateInterface $form_state)
+  {
+    $formData = $form_state->getValues();
+    $ldapLogin = (new LdapConn())->ldapLogin($formData["drupal_ldap_test_username"], $formData["drupal_ldap_test_password"]);
+    if ($ldapLogin->message == "SUCCESS") {
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_mapping_status', 1)->save();
+      Utility::add_message('Congratulations, Test Authentication successful for <strong>'.$formData["drupal_ldap_test_username"] . '</strong>!', 'status');
+    }else{
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_mapping_status', 0)->save();
+      Utility::add_message('Error, User authentated successfully.', 'error');
+    }
+  }
+  /**
+   * Form submission handeler handler for $form['drupal_ldap_test_auth']
+   * This methid tests the connection to the ldap server using the provided credentials and saves them.
+   */
+  public function ldapAttributeMapping(array &$form, FormStateInterface $form_state)
+  {
+    $formData = $form_state->getValues();
+    $ldapConn = new LdapConn();
+    $ldapConnection = $ldapConn->getConnection();
+    if ($ldapConnection) {
+
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_email_attribute', $formData["drupal_ldap_email_attribute"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_fname_attribute', $formData["drupal_ldap_fname_attribute"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_lname_attribute', $formData["drupal_ldap_lname_attribute"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_phone_attribute', $formData["drupal_ldap_phone_attribute"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_email_domain_attribute', $formData["drupal_ldap_email_domain_attribute"])->save();
+
+      Utility::add_message('Congratulations, LDAP server user attributes mapping saved successfully.', 'status');
+    } else {
+      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+    }
+  }
+  /**
+   * Form submission handeler handler for $form['drupal_ldap_attribute_mapping']
+   * This methid tests the connection to the ldap server using the provided credentials and saves them.
+   */
+  public function ldapSigninOptions(array &$form, FormStateInterface $form_state)
+  {
+    $formData = $form_state->getValues();
+    $ldapConn = new LdapConn();
+    $ldapConnection = $ldapConn->getConnection();
+    if ($ldapConnection) {
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_ldap', $formData["drupal_ldap_enable_ldap"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_auto_reg', $formData["drupal_ldap_enable_auto_reg"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_auth_admin', $formData["drupal_ldap_enable_auth_admin"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_auth_users', $formData["drupal_ldap_enable_auth_users"])->save();
+
+      Utility::add_message('Congratulations, LDAP sign in options saved successfully.', 'status');
+    } else {
+      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+    }
+  }
+  /**
+   * Form submission handeler handler for $form['drupal_ldap_role_mapping']
+   * This methid tests the connection to the ldap server using the provided credentials and saves them.
+   */
+  public function ldapRoleMapping(array &$form, FormStateInterface $form_state)
+  {
+    $formData = $form_state->getValues();
+    $ldapConn = new LdapConn();
+    $ldapConnection = $ldapConn->getConnection();
+    if ($ldapConnection) {
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_role_mapping', $formData["drupal_ldap_enable_role_mapping"])->save();
+      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_default_role', $formData["drupal_ldap_default_role"])->save();
+
+      Utility::add_message('Congratulations, LDAP server user role mapping saved successfully.', 'status');
     } else {
       Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
     }
