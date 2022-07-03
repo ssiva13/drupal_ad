@@ -1,0 +1,32 @@
+drupal_ad.user_roles:
+  path: 'admin/config/drupal_ad/user_roles'
+  defaults:
+    _controller: '\Drupal\drupal_ad\Controller\LdapController::drupalUserRoles'
+    _title: 'Drupal User Roles'
+  requirements:
+    _permission: 'administer site configuration'
+
+drupal_ad.ldap_config:
+  path: 'admin/config/drupal_ad/ldap_config'
+  defaults:
+    _title: 'Active Directory / Ldap Login'
+    _form: '\Drupal\drupal_ad\Form\DrupalLdapForm'
+  requirements:
+    _permission: 'administer site configuration'
+
+# Active Directory Search Bases
+drupal_ad.search_bases:
+  path: 'admin/config/drupal_ad/search_bases'
+  defaults:
+    _controller: '\Drupal\drupal_ad\Controller\LdapController::ldapSearchBases'
+    _title: 'Active Directory Search Bases'
+  requirements:
+    _permission: 'administer site configuration'
+
+drupal_ad.search_bases_markup:
+  path: 'admin/config/drupal_ad/search_bases_markup'
+  defaults:
+    _controller: '\Drupal\drupal_ad\Controller\LdapController::ldapSearchBasesMarkUp'
+    _title: 'LDAP Search Bases'
+  requirements:
+    _permission: 'administer site configuration'
