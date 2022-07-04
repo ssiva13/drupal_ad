@@ -281,4 +281,12 @@ dl, ol, ul {
 }
 /*End List classes*/
 
+.options--block{
+  margin-top: 1em;
+  padding: 1.5em;
+  -webkit-box-shadow: 0 0 0.7em rgba(0,0,0,.3);
+  box-shadow: 0 0 0.7em rgba(0,0,0,.3);
+  border-radius: 1em;
+}
+
 

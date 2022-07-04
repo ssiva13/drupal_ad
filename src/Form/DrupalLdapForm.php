@@ -353,22 +353,24 @@ class DrupalLdapForm extends FormBase
 
 //      drupal_ldap_options
     $form['drupal_ldap_options']['description'] = [
+      '#prefix' => '<div class="options--block">',
       '#markup' => '<p class="message message--primary"><strong>NOTE:</strong> Enable login and sign in options using LDAP.</p>',
     ];
     $form['drupal_ldap_options']['drupal_ldap_enable_ldap'] = [
       '#prefix' => '<div class="switch_box">',
       '#suffix' => '</div>',
+      '#id' => 'drupal_ldap_enable_ldap',
       '#type' => 'checkbox',
       '#description' => 'Enabling LDAP login will protect your login page by your configured LDAP. Please check this only after you have successfully tested your configuration as the default Drupal login will stop working',
       '#title' => 'Enable Login with LDAP.',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_ldap'),
       '#attributes' => [
-        'class' => ['switch']
+        'class' => ['switch option-switch']
       ]
     ];
     $form['drupal_ldap_options']['drupal_ldap_enable_auto_reg'] = [
-      '#prefix' => '<div class="switch_box">',
-      '#suffix' => '</div>',
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
+      '#suffix' => '</div></div>',
       '#type' => 'checkbox',
       '#title' => 'Enable Auto Registering users if they do not exist.',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_auto_reg'),
@@ -376,25 +378,88 @@ class DrupalLdapForm extends FormBase
         'class' => ['switch']
       ]
     ];
-    $form['drupal_ldap_options']['drupal_ldap_enable_auth_admin'] = [
-      '#prefix' => '<div class="switch_box">',
+
+
+
+    $form['drupal_ldap_options']['admin-description'] = [
+      '#prefix' => '<div id="drupal_ldap_admin_options" class="ldap--enabled options--block">',
+      '#markup' => '<p class="message message--primary"><strong>NOTE:</strong> Manage Admins login sign in options within your application.</p>',
+    ];
+    $form['drupal_ldap_options']['drupal_ldap_admin_drupal_only'] = [
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
       '#suffix' => '</div>',
+      '#id' => 'drupal_ldap_admin_drupal_only',
+      '#type' => 'checkbox',
+      '#title' => ' Authenticate Admins from Drupal Only',
+      '#tree' => TRUE,
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_admin_drupal_only'),
+      '#attributes' => [
+        'class' => ['switch option-switch']
+      ]
+    ];
+    $form['drupal_ldap_options']['drupal_ldap_admin_ad_only'] = [
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
+      '#suffix' => '</div>',
+      '#type' => 'checkbox',
+      '#id' => 'drupal_ldap_admin_ad_only',
+      '#title' => ' Authenticate Admins from LDAP Only',
+      '#tree' => TRUE,
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_admin_ad_only'),
+      '#attributes' => [
+        'class' => ['switch option-switch']
+      ]
+    ];
+    $form['drupal_ldap_options']['drupal_ldap_enable_auth_admin'] = [
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
+      '#suffix' => '</div></div>',
+      '#id' => 'drupal_ldap_enable_auth_admin',
       '#type' => 'checkbox',
       '#title' => ' Authenticate Administrators from both LDAP and Drupal.',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_auth_admin'),
       '#attributes' => [
-        'class' => ['switch']
+        'class' => ['switch option-switch']
+      ]
+    ];
+
+
+    $form['drupal_ldap_options']['user-description'] = [
+      '#prefix' => '<div id="drupal_ldap_user_options" class="ldap--enabled options--block">',
+      '#markup' => '<p class="message message--primary"><strong>NOTE:</strong> Manage User login sign in options within your application.</p>',
+    ];
+    $form['drupal_ldap_options']['drupal_ldap_user_drupal_only'] = [
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
+      '#suffix' => '</div>',
+      '#id' => 'drupal_ldap_user_drupal_only',
+      '#type' => 'checkbox',
+      '#title' => ' Authenticate Users from Drupal Only',
+      '#tree' => TRUE,
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_user_drupal_only'),
+      '#attributes' => [
+        'class' => ['switch option-switch']
+      ]
+    ];
+    $form['drupal_ldap_options']['drupal_ldap_user_ad_only'] = [
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
+      '#suffix' => '</div>',
+      '#type' => 'checkbox',
+      '#id' => 'drupal_ldap_user_ad_only',
+      '#title' => ' Authenticate User from LDAP Only',
+      '#tree' => TRUE,
+      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_user_ad_only'),
+      '#attributes' => [
+        'class' => ['switch option-switch']
       ]
     ];
     $form['drupal_ldap_options']['drupal_ldap_enable_auth_users'] = [
-      '#prefix' => '<div class="switch_box">',
-      '#suffix' => '</div>',
+      '#prefix' => '<div class="switch_box ldap--enabled ">',
+      '#suffix' => '</div></div>',
       '#type' => 'checkbox',
+      '#id' => 'drupal_ldap_enable_auth_users',
       '#title' => ' Authenticate Users from both LDAP and Drupal.',
       '#tree' => TRUE,
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_auth_users'),
       '#attributes' => [
-        'class' => ['switch']
+        'class' => ['switch option-switch']
       ]
     ];
     $form['drupal_ldap_options']['drupal_ldap_save_options'] = [
@@ -402,13 +467,6 @@ class DrupalLdapForm extends FormBase
       '#prefix' => '<br>',
       '#value' => t('Save Sign In Options'),
       '#submit' => ['::ldapSigninOptions'],
-//      '#validate' => ['::ldapConfigValidate'],
-//      '#limit_validation_errors' => [
-//        ["drupal_ldap_enable_ldap"],
-//        ["drupal_ldap_enable_auto_reg"],
-//        ["drupal_ldap_enable_auth_admin"],
-//        ["drupal_ldap_enable_auth_users"],
-//      ],
       '#attributes' => [
         'class' => ['btn--primary'],
         'style' => 'float:right;'
@@ -672,10 +730,44 @@ class DrupalLdapForm extends FormBase
     $ldapConnection = $ldapConn->getConnection();
     if ($ldapConnection) {
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_ldap', $formData["drupal_ldap_enable_ldap"])->save();
-      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_auto_reg', $formData["drupal_ldap_enable_auto_reg"])->save();
-      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_auth_admin', $formData["drupal_ldap_enable_auth_admin"])->save();
-      Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_auth_users', $formData["drupal_ldap_enable_auth_users"])->save();
-
+      if($enableLdapLogin = Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_ldap')) {
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_enable_auto_reg', $formData["drupal_ldap_enable_auto_reg"])
+          ->save();
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_enable_auth_admin', $formData["drupal_ldap_enable_auth_admin"])
+          ->save();
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_enable_auth_users', $formData["drupal_ldap_enable_auth_users"])
+          ->save();
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_admin_drupal_only', $formData["drupal_ldap_admin_drupal_only"])
+          ->save();
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_admin_ad_only', $formData["drupal_ldap_admin_ad_only"])
+          ->save();
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_user_drupal_only', $formData["drupal_ldap_user_drupal_only"])
+          ->save();
+        Drupal::configFactory()
+          ->getEditable('drupal_ad.settings')
+          ->set('drupal_ldap_user_ad_only', $formData["drupal_ldap_user_ad_only"])
+          ->save();
+      }else{
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_enable_auto_reg');
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_enable_auth_admin');
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_enable_auth_users');
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_admin_drupal_only');
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_admin_ad_only');
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_user_drupal_only');
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_user_ad_only');
+      }
       Utility::add_message('Congratulations, LDAP sign in options saved successfully.', 'status');
     } else {
       Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
