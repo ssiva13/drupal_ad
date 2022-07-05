@@ -1,0 +1,38 @@
+drupal_ldap_license_key: null
+drupal_ldap_force_auth: false
+drupal_ldap_enable_backdoor: false
+drupal_ldap_default_relaystate: ''
+drupal_ldap_name: ''
+drupal_ldap_issuer: ''
+drupal_ldap_login_url: ''
+drupal_ldap_logout_url: ''
+drupal_ldap_x509_certificate: ''
+drupal_ldap_response_signed: false
+drupal_ldap_assertion_signed: false
+drupal_ldap_enable_login: false
+drupal_ldap_username_attribute: ''
+drupal_ldap_email_attribute: ''
+drupal_ldap_disable_autocreate_users: false
+drupal_ldap_default_role: ''
+drupal_ldap_status: ''
+drupal_ldap_tx_id: ''
+drupal_ldap_base_url: ''
+drupal_ldap_directory_server: ''
+drupal_ldap_protocol: ''
+drupal_ldap_server_address: ''
+drupal_ldap_server_port: ''
+drupal_ldap_server_username: ''
+drupal_ldap_server_password: ''
+drupal_ldap_search_base: ''
+drupal_ldap_enable_ldap: ''
+drupal_ldap_enable_auto_reg: ''
+drupal_ldap_enable_auth_admin: ''
+drupal_ldap_enable_auth_users: ''
+drupal_ldap_enable_role_mapping: ''
+drupal_ldap_fname_attribute: ''
+drupal_ldap_lname_attribute: ''
+drupal_ldap_phone_attribute: ''
+drupal_ldap_email_domain_attribute: ''
+
+
+

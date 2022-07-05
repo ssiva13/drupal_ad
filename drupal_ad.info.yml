@@ -1,0 +1,9 @@
+name: Active Directory(LDAP) for Drupal
+type: module
+description: Custom Active Directory(LDAP) for Drupal allows your users to log in to your Drupal site using their Ldap / AD credentials
+package: Ldap
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:jquery
+  - drupal:fontawesome
+  - drupal:field_group

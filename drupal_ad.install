@@ -1,0 +1,24 @@
+<?php
+/**
+ * @file
+ * Installation file for Ldap Module.
+ */
+
+/**
+ * hook_uninstall not needed.
+ * Configure variables are cleared when module is uninstalled.
+ **/
+
+
+function drupal_uninstall() {
+  \Drupal::service('module_installer')->uninstall(['drupal_ldap']);
+}
+
+function drupal_install(){
+  $config = \Drupal::configFactory()->getEditable('drupal_ad.settings');
+  $config->set('drupal_ldap_inst_time_ref', time());
+  $config->set('drupal_ldap_server_port', '389');
+  $config->set('drupal_ldap_encryption_token', openssl_random_pseudo_bytes(32));
+  $config->set('drupal_ldap_username_attribute', 'samaccountName');
+  $config->save();
+}
