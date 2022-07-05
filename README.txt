@@ -2,7 +2,7 @@ Active Directory(LDAP) for Drupal
 
 INTRODUCTION
   The Active Directory(LDAP) for Drupal module provides configurable integration with active directory using the ldap php extension.
-  For the description of the module visit: https://www.drupal.org/project/drupal_ldap_ad
+  For the description of the module visit: https://www.drupal.org/project/drupal_ad
 
 REQUIREMENTS
   This module requires the following php extensions.
@@ -17,7 +17,7 @@ REQUIREMENTS
 
 INSTALLATION
   Install the Active Directory(LDAP) for Drupal module using composer.
-    composer require drupal/drupal_ldap_ad
+    composer require 'drupal/drupal_ad-drupal_ad:^1.2'
   Visit how to install modules for further information.
 
 CONFIGURATION

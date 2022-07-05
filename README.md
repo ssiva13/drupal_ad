@@ -16,7 +16,7 @@ The Active Directory(LDAP) for Drupal module provides configurable integration w
   ![Drupal AD Image](./assets/images/drupal_ad.png )
 
  * For the description of the module visit:
-   https://www.drupal.org/project/drupal_ldap_ad
+   https://www.drupal.org/project/drupal_ad
 
 
 REQUIREMENTS
@@ -36,7 +36,7 @@ INSTALLATION
 ------------
 Install the Active Directory(LDAP) for Drupal module using composer.
 ```
-composer require drupal/drupal_ldap_ad
+composer require 'drupal/drupal_ad-drupal_ad:^1.2'
 ```
 Visit [how to install modules](https://www.drupal.org/node/1897420) for further information.
 
