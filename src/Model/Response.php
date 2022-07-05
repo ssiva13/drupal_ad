@@ -15,6 +15,8 @@ class Response
 
   public bool $status;
 
+  public string $messageDetails;
+
   public string $message;
 
   public string $userDn;

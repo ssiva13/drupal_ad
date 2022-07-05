@@ -262,12 +262,13 @@ class LdapConn {
     if ($this->bind) {
       $searchResult = ldap_search($this->ldapconn, $userDn, $searchFilter);
       $ldapResponse->status = TRUE;
-      $ldapResponse->message = 'SUCCESS';
+      $ldapResponse->message = Response::SUCCESS;
       $ldapResponse->userDn = $userDn;
       return $ldapResponse;
     }
     $ldapResponse->status = FALSE;
-    $ldapResponse->message = 'ERROR';
+    $ldapResponse->messageDetails = ldap_error($this->ldapconn);
+    $ldapResponse->message = Response::BIND_ERROR;
     $ldapResponse->userDn = $userDn;
     return $ldapResponse;
   }
