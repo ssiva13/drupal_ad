@@ -126,9 +126,9 @@ class DrupalLdapForm extends FormBase
       '#title' => 'Directory Server',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_directory_server'),
       '#options' => [
-        '' => '-- Select --',
-        'msad' => 'Microsoft Active Directory',
-        'openldap' => 'OpenLDAP',
+        '' => $this->t('-- Select --'),
+        'msad' => $this->t('Microsoft Active Directory'),
+        'openldap' => $this->t('OpenLDAP'),
       ],
       '#attributes' => [
 
@@ -137,12 +137,12 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config']['drupal_ldap_protocol'] = [
       '#type' => 'select',
       '#title' => 'LDAP Protocol',
-      '#description' => "Pick <strong>ldap://</strong> or <strong>ldaps://</strong> from the dropdwon list",
+      '#description' => $this->t("Pick <strong>ldap://</strong> or <strong>ldaps://</strong> from the dropdwon list"),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_protocol'),
       '#options' => [
-        '' => '-- Select --',
-        'ldap://' => 'LDAP (ldap://)',
-        'ldaps://' => 'LDAPS (ldaps://)',
+        '' => $this->t('-- Select --'),
+        'ldap://' => $this->t('LDAP (ldap://)'),
+        'ldaps://' => $this->t('LDAPS (ldaps://)'),
       ],
       '#attributes' => [
 
@@ -151,7 +151,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config']['drupal_ldap_server_url'] = [
       '#type' => 'textfield',
       '#title' => 'LDAP Server Address',
-      '#description' => "Specify the host name for the LDAP server in the above text field.",
+      '#description' => $this->t("Specify the host name for the LDAP server in the above text field."),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_url'),
       '#attributes' => [
         'placeholder' => '127.0.0.1 or domain.com',
@@ -159,7 +159,7 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_config']['drupal_ldap_server_port'] = [
       '#type' => 'textfield',
-      '#description' => "Edit the port number if you have custom port number.",
+      '#description' => $this->t("Edit the port number if you have custom port number."),
       '#title' => 'LDAP Server Port',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_port'),
       '#attributes' => [
@@ -168,7 +168,7 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_config']['drupal_ldap_server_username'] = [
       '#type' => 'textfield',
-      '#description' => "You can specify the Username of the LDAP server in the either way as follows, <strong>username@domainname</strong> or <strong>Distinguished Name(DN) format</strong>",
+      '#description' => $this->t("You can specify the Username of the LDAP server in the either way as follows, <strong>username@domainname</strong> or <strong>Distinguished Name(DN) format</strong>"),
       '#title' => 'Account Username',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_username'),
       '#attributes' => [
@@ -177,7 +177,7 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_config']['drupal_ldap_server_password'] = [
       '#type' => 'password',
-      '#description' => "The above username and password will be used to establish the connection to your LDAP server.",
+      '#description' => $this->t("The above username and password will be used to establish the connection to your LDAP server."),
       '#title' => 'Account Password' . Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_address'),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_password'),
       '#attributes' => [
@@ -187,7 +187,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config']['drupal_ldap_test_connection'] = [
       '#type' => 'submit',
       '#prefix' => '<br>',
-      '#value' => t('Test Configuration'),
+      '#value' =>  $this->t('Test Configuration'),
       '#submit' => ['::ldapTestConnection'],
       '#validate' => ['::ldapConfigValidate'],
       '#limit_validation_errors' => [
@@ -204,7 +204,7 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_config']['drupal_ldap_save_configuration'] = [
       '#type' => 'submit',
-      '#value' => t('Save Configuration'),
+      '#value' => $this->t('Save Configuration'),
       '#submit' => ['::ldapSaveConfig'],
       '#validate' => ['::ldapConfigValidate'],
       '#limit_validation_errors' => [
@@ -229,11 +229,11 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_user_mapping']['drupal_ldap_search_base'] = [
       '#type' => 'select',
       '#id' => 'drupal_ldap_search_base',
-      '#description' => "<p>
+      '#description' => $this->t("<p>
            This is the LDAP tree under which we will search for the users for authentication.
            If we are not able to find a user in LDAP it means they are not present in this search base or any of its sub trees.
            Provide the distinguished name of the Search Base object. eg. <strong>cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=com</strong>
-        </p>",
+        </p>"),
       '#title' => 'LDAP Search Base',
       '#validated' => TRUE,
       '#ajax' => [
@@ -250,11 +250,11 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_user_mapping']['drupal_ldap_custom_base'] = [
       '#type' => 'textfield',
       '#id' => 'drupal_ldap_custom_base',
-      '#description' => "<p>This is the LDAP Tree under which we will search for the users for authentication.
+      '#description' => $this->t("<p>This is the LDAP Tree under which we will search for the users for authentication.
            If we are not able to find a user in LDAP it means they are not present in this search base or any of its sub trees. They may be present in some other .
            Provide the distinguished name of the Search Base object. eg. cn=Users,dc=domain,dc=com.
            If you have users in different locations in the directory(OU's), separate the distinguished names of the search base objects by a semi-colon(;). eg. <strong>cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=com</strong>
-        </p>",
+        </p>"),
       '#title' => "Custom LDAP Search Base - Click Here For
             <a data-dialog-type='modal' class='use-ajax ajax--link' data-dialog-options='{&quot;width&quot;:600}' data-ajax-progres='fullscreen' data-ajax-focus=''
             href='". Url::fromRoute('drupal_ad.search_bases_markup')->toString()."' methods='GET' ><strong> Search Bases / DNs</strong> </a>",
@@ -268,15 +268,15 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_user_mapping']['drupal_ldap_username_attribute'] = [
       '#type' => 'select',
       '#title' => 'Search Filter/Username Attribute',
-      '#description' => "Please make clear that the attributes that we are showing are examples and the actual ones could be different. These should be confirmed with the LDAP Admin.",
+      '#description' => $this->t("Please make clear that the attributes that we are showing are examples and the actual ones could be different. These should be confirmed with the LDAP Admin."),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_username_attribute'),
       '#options' => [
-        '' => '-- Select --',
-        'samaccountname' => 'sAMAccountName',
-        'userPrincipalName' => 'userPrincipalName',
-        'mail' => 'mail',
-        'cn' => 'cn',
-        'custom' => 'Provide Custom LDAP attribute name',
+        '' => $this->t('-- Select --'),
+        'samaccountname' => $this->t('sAMAccountName'),
+        'userPrincipalName' => $this->t('userPrincipalName'),
+        'mail' => $this->t('mail'),
+        'cn' => $this->t('cn'),
+        'custom' => $this->t('Provide Custom LDAP attribute name'),
       ],
       '#ajax' => [
         'callback' => '::SearchFilterAjax',
@@ -337,7 +337,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_test_auth']['drupal_ldap_test_auth'] = [
       '#type' => 'submit',
       '#prefix' => '<br>',
-      '#value' => t('Test Authentication'),
+      '#value' => $this->t('Test Authentication'),
       '#submit' => ['::ldapTestAuth'],
       '#validate' => ['::ldapConfigValidate'],
       '#limit_validation_errors' => [
@@ -361,7 +361,7 @@ class DrupalLdapForm extends FormBase
       '#suffix' => '</div>',
       '#id' => 'drupal_ldap_enable_ldap',
       '#type' => 'checkbox',
-      '#description' => 'Enabling LDAP login will protect your login page by your configured LDAP. Please check this only after you have successfully tested your configuration as the default Drupal login will stop working',
+      '#description' => $this->t('Enabling LDAP login will protect your login page by your configured LDAP. Please check this only after you have successfully tested your configuration as the default Drupal login will stop working'),
       '#title' => 'Enable Login with LDAP.',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_ldap'),
       '#attributes' => [
@@ -465,7 +465,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_options']['drupal_ldap_save_options'] = [
       '#type' => 'submit',
       '#prefix' => '<br>',
-      '#value' => t('Save Sign In Options'),
+      '#value' => $this->t('Save Sign In Options'),
       '#submit' => ['::ldapSigninOptions'],
       '#attributes' => [
         'class' => ['btn--primary'],
@@ -482,7 +482,7 @@ class DrupalLdapForm extends FormBase
       '#prefix' => '<div class="switch_box">',
       '#suffix' => '</div>',
       '#type' => 'checkbox',
-      '#description' => 'Enabling Role Mapping will assign the below selected default WordPress Role to the LDAP users.',
+      '#description' => $this->t('Enabling Role Mapping will assign the below selected default WordPress Role to the LDAP users.'),
       '#title' => 'Enable Role Mapping',
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_role_mapping'),
       '#attributes' => [
@@ -492,13 +492,13 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_role_mapping']['drupal_ldap_default_role'] = [
       '#type' => 'select',
       '#title' => 'Default Role Mapping',
-      '#options' => array_merge(['' => ' -- Select -- '], user_role_names()),
+      '#options' => array_merge(['' => $this->t(' -- Select -- ')], user_role_names()),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_default_role'),
     ];
     $form['drupal_ldap_role_mapping']['drupal_ldap_save_role_mapping'] = [
       '#type' => 'submit',
       '#prefix' => '<br>',
-      '#value' => t('Save Role Mapping'),
+      '#value' => $this->t('Save Role Mapping'),
       '#submit' => ['::ldapRoleMapping'],
       '#validate' => ['::ldapConfigValidate'],
       '#limit_validation_errors' => [
@@ -558,7 +558,7 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_attribute_mapping']['drupal_ldap_save_attribute_mapping'] = [
       '#type' => 'submit',
-      '#value' => t('Save Attribute Mapping'),
+      '#value' => $this->t('Save Attribute Mapping'),
       '#submit' => ['::ldapAttributeMapping'],
       '#validate' => ['::ldapConfigValidate'],
       '#limit_validation_errors' => [

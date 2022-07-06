@@ -7,8 +7,11 @@ use Drupal\user\Entity\User;
 use Drupal\drupal_ad\Model\Response as LdapResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 class UserAccount {
+
+  use StringTranslationTrait;
 
   public LdapConn $ldapConn;
 
@@ -52,21 +55,21 @@ class UserAccount {
       if ($account = User::create($newUser)) {
         $account->save();
          //_user_mail_notify('status_activated', $account);
-        Utility::add_message(t(ucwords($account->getDisplayName()) . ' User Account Created Successfully.'), 'status');
+        Utility::add_message($this->t(ucwords($account->getDisplayName()) . ' User Account Created Successfully.'), 'status');
         return $this->finalizeLogin($account, $base_url, $authResponse);
       }
       else {
-        Utility::add_message(t('Your user could not be created in the Drupal. Please contact your administrator.'), 'form_error', $form_state);
+        Utility::add_message($this->t('Your user could not be created in the Drupal. Please contact your administrator.'), 'form_error', $form_state);
       }
     }
     elseif ($authResponse->message === LdapResponse::NOT_EXIST) {
-      Utility::add_message(t('There is no ldap user with the provided username! <strong>'. ucwords($username) .'</strong>'), 'form_error', $form_state);
+      Utility::add_message($this->t('There is no ldap user with the provided username! <strong>'. ucwords($username) .'</strong>'), 'form_error', $form_state);
     }
     elseif ($authResponse->message === LdapResponse::BIND_ERROR) {
-      Utility::add_message(t('There is an error contacting the LDAP server ' . $authResponse->messageDetails .'. Please check your configurations or contact the administrator.'), 'form_error', $form_state);
+      Utility::add_message($this->t('There is an error contacting the LDAP server ' . $authResponse->messageDetails .'. Please check your configurations or contact the administrator.'), 'form_error', $form_state);
     }
     else {
-      Utility::add_message(t($authResponse->message . 'Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+      Utility::add_message($this->t($authResponse->message . 'Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
     }
     return FALSE;
   }
@@ -87,14 +90,14 @@ class UserAccount {
 
         $authResponse = $this->ldapConn->ldapLogin($username, $password);
         if ($authResponse->message === LdapResponse::SUCCESS) {
-          Utility::add_message(t($account->getDisplayName() . ' Logged in Successfully via AD!'), 'status');
+          Utility::add_message($this->t($account->getDisplayName() . ' Logged in Successfully via AD!'), 'status');
           return $this->finalizeLogin($account, $base_url, $authResponse);
         }
         elseif ($authResponse->message === LdapResponse::NOT_EXIST) {
-          Utility::add_message(t('There is no ldap user with the provided username! <strong>'. ucwords($username) .'</strong>'), 'form_error', $form_state);
+          Utility::add_message($this->t('There is no ldap user with the provided username! <strong>'. ucwords($username) .'</strong>'), 'form_error', $form_state);
         }
         else {
-          Utility::add_message(t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+          Utility::add_message($this->t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
         }
 
       }elseif ($adminDrupalOnly){
@@ -103,7 +106,7 @@ class UserAccount {
 
         $authResponse = $this->ldapConn->ldapLogin($username, $password);
         if ($authResponse->message === LdapResponse::SUCCESS) {
-          Utility::add_message(t($account->getDisplayName() . ' Admin Logged in Successfully via AD!'), 'status');
+          Utility::add_message($this->t($account->getDisplayName() . ' Admin Logged in Successfully via AD!'), 'status');
           return $this->finalizeLogin($account, $base_url, $authResponse);
         }
         else {
@@ -111,7 +114,7 @@ class UserAccount {
         }
 
       }else{
-        Utility::add_message(t(' (errrrr  admin login) Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+        Utility::add_message($this->t(' (errrrr  admin login) Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
       }
 
     }
@@ -129,14 +132,14 @@ class UserAccount {
 
         $authResponse = $this->ldapConn->ldapLogin($username, $password);
         if ($authResponse->message === LdapResponse::SUCCESS) {
-          Utility::add_message(t($account->getDisplayName() . ' Admin Logged in Successfully via AD!'), 'status');
+          Utility::add_message($this->t($account->getDisplayName() . ' Admin Logged in Successfully via AD!'), 'status');
           return $this->finalizeLogin($account, $base_url, $authResponse);
         }
         elseif ($authResponse->message === LdapResponse::NOT_EXIST) {
-          Utility::add_message(t('There is no ldap user with the provided username! <strong>'. ucwords($username) .'</strong>'), 'form_error', $form_state);
+          Utility::add_message($this->t('There is no ldap user with the provided username! <strong>'. ucwords($username) .'</strong>'), 'form_error', $form_state);
         }
         else {
-          Utility::add_message(t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+          Utility::add_message($this->t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
         }
 
       }elseif ($userDrupalOnly){
@@ -145,14 +148,14 @@ class UserAccount {
       }elseif($multiAuthUsers){
         $authResponse = $this->ldapConn->ldapLogin($username, $password);
         if ($authResponse->message === LdapResponse::SUCCESS) {
-          Utility::add_message(t($account->getDisplayName() . ' logged in Successfully via ldap!'), 'status');
+          Utility::add_message($this->t($account->getDisplayName() . ' logged in Successfully via ldap!'), 'status');
           return $this->finalizeLogin($account, $base_url, $authResponse);
         }
         else {
           $this->drupalLogin($username, $password);
         }
       }else{
-        Utility::add_message(t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+        Utility::add_message($this->t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
       }
 
     }
@@ -191,6 +194,6 @@ class UserAccount {
   public function drupalLogin($username, $password): void {
     $userId = Drupal::service('user.auth')->authenticate($username, $password);
     $user = User::load($userId);
-    Utility::add_message(t($user->getDisplayName() . ' Logged in Successfully!'), 'status');
+    Utility::add_message($this->t($user->getDisplayName() . ' Logged in Successfully!'), 'status');
   }
 }
