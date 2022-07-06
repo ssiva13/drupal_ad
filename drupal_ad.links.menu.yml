@@ -1,0 +1,6 @@
+drupal_ad.admin:
+  title: 'Active Directory for Drupal'
+  description: 'Configure Active Directory for Drupal - LDAP'
+  parent: system.admin_config_system
+  route_name: drupal_ad.ldap_config
+  weight: -20
