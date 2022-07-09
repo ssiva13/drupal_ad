@@ -1,11 +1,9 @@
 <?php
 
-
 use Drupal\Component\Utility\Html;
 use Drupal\drupal_ad\Model\UserAccount;
 use Drupal\drupal_ad\Model\Utility;
 use Drupal\user\Entity\User;
-
 
 /**
  * @file
@@ -69,7 +67,7 @@ function drupal_ad_authenticate_submit(&$form, &$form_state) {
       $userId = Drupal::service('user.auth')->authenticate($username, $password);
       $user = User::load($userId);
       if (isset($user)) {
-        Utility::add_message(t(ucwords($user->getDisplayName()) . ' Logged in Successfully!'), 'status');
+        Utility::add_message(t('@username Logged in Successfully!', ['@username' => ucwords($user->getDisplayName())]), 'status');
       } else {
         Utility::add_message(t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
       }
