@@ -2,8 +2,7 @@
 
 namespace Drupal\drupal_ad\Model;
 
-use Drupal\Core\Form\FormState;
-use Drupal\drupal_ad\Model\Support;
+use Drupal;
 use Drupal\Core\Form\FormStateInterface;
 
 //use Drupal\drupal_ad\Model\AttributeMapping;
@@ -86,11 +85,7 @@ class Utility
       $form_state->setErrorByName('name', $_message);
       return;
     }
-    if (version_compare(\Drupal::VERSION, '8.5.5') >= 0) {
-      \Drupal::messenger()->addMessage($_message, $type);
-    } else {
-      drupal_set_message($_message, $type);
-    }
+    Drupal::messenger()->addMessage($_message, $type);
   }
 
   /**

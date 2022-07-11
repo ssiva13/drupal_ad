@@ -223,7 +223,7 @@ class LdapConn {
         if ($userInfo) {
           $userDn = ldap_get_dn($ldapConnection, $userInfo);
           $authResponse = $this->ldapAuthenticate($userDn, $password);
-          if ($authResponse->message == 'SUCCESS') {
+          if ($authResponse->message == Response::SUCCESS) {
             foreach ($userAttributes as $attribute) {
               $userRecord = $userEntry[0];
               $authResponse->userAttributes['drupal_ldap_' . $attribute] = (array_key_exists(strtolower($attribute), $userRecord)) ? $userRecord[strtolower($attribute)][0] : '';
@@ -233,15 +233,15 @@ class LdapConn {
           return $authResponse;
         }
         $ldapResponse->status = FALSE;
-        $ldapResponse->message = 'NOT_EXIST';
+        $ldapResponse->message = Response::NOT_EXIST;
         return $ldapResponse;
       }
       $ldapResponse->status = FALSE;
-      $ldapResponse->message = 'BIND_ERROR';
+      $ldapResponse->message = Response::BIND_ERROR;
       return $ldapResponse;
     }
     $ldapResponse->status = FALSE;
-    $ldapResponse->message = 'CONNECTION_ERROR';
+    $ldapResponse->message = Response::CONNECTION_ERROR;
     return $ldapResponse;
 
   }
@@ -262,12 +262,13 @@ class LdapConn {
     if ($this->bind) {
       $searchResult = ldap_search($this->ldapconn, $userDn, $searchFilter);
       $ldapResponse->status = TRUE;
-      $ldapResponse->message = 'SUCCESS';
+      $ldapResponse->message = Response::SUCCESS;
       $ldapResponse->userDn = $userDn;
       return $ldapResponse;
     }
     $ldapResponse->status = FALSE;
-    $ldapResponse->message = 'ERROR';
+    $ldapResponse->messageDetails = ldap_error($this->ldapconn);
+    $ldapResponse->message = Response::BIND_ERROR;
     $ldapResponse->userDn = $userDn;
     return $ldapResponse;
   }
@@ -325,9 +326,6 @@ class LdapConn {
     }
     if (isset($phone_attribute) && !empty($phone_attribute)) {
       $userAttributes[] = $phone_attribute;
-    }
-    if (isset($email_domain_attribute) && !empty($email_domain_attribute)) {
-      $userAttributes[] = $email_domain_attribute;
     }
     return $userAttributes;
   }

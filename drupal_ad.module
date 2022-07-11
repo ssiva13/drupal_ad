@@ -1,13 +1,77 @@
 <?php
+
+use Drupal\Component\Utility\Html;
+use Drupal\drupal_ad\Model\UserAccount;
+use Drupal\drupal_ad\Model\Utility;
+use Drupal\user\Entity\User;
+
 /**
  * @file
  * Module file for Drupal ldap Module.
  */
 
-function drupal_ad_preprocess_node__page(array &$variables) : void {
+function drupal_ad_preprocess_node__page(array &$variables): void {
   $variables['#attached']['library'][] = 'core/jquery';
   $variables['#attached']['library'][] = 'core/fontawesome';
   $variables['#attached']['library'][] = 'core/drupal.dialog.ajax';
   $variables['#attached']['library'][] = 'field_group/formatter.horizontal_tabs';
 }
 
+function drupal_ad_form_alter(&$form, &$form_state, $form_id) {
+  $isAdmin = Drupal::service('router.admin_context')->isAdminRoute();
+  $moduleLink = Drupal::request()->getRequestUri();
+  if ($isAdmin && strpos($moduleLink, 'drupal_ad') !== FALSE) {
+    Utility::add_message(t('<b> For any queries or support reach out on email at <a target="_blank" href="mailto:simonsiva13@@gmail.com">simonsiva13@@gmail.com</a> </b>.'), 'warning');
+  }
+  if (!\Drupal::currentUser()->isAuthenticated()) {
+    $form_ids = [
+      'user_login_block',
+      'user_login',
+      'user_login_form',
+      'user-login-form',
+    ];
+    $enableLdapLogin = Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_enable_ldap');
+    if (in_array($form_id, $form_ids) && $enableLdapLogin) {
+      array_unshift($form['#validate'], 'drupal_ad_authenticate_submit');
+    }
+  }
+}
+
+
+/**
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function drupal_ad_authenticate_submit(&$form, &$form_state) {
+  $formData = $form_state->getValues();
+  $username = Html::escape($formData['name']);
+  $password = Html::escape($formData['pass']);
+
+  $account = user_load_by_name($username);
+  if (!$account) {
+    $account = user_load_by_mail($username);
+  }
+  $enableDrupalAd = Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_ldap');
+  if (!$account) {
+    $enableAutoReg = Drupal::config('drupal_ad.settings')->get('drupal_ldap_enable_auto_reg');
+    if ($enableAutoReg && $enableDrupalAd) {
+      return (new UserAccount())->createAccount($username, $password, $form_state);
+    } else {
+      Utility::add_message(t('Your user could not be created in the Drupal. <b>Please enable the Auto Create feature in your Active Directory / Ldap Login module or contact your administrator.</b>'), 'form_error', $form_state);
+    }
+  }else{
+    if ($enableDrupalAd) {
+      return (new UserAccount())->processUserLogin($username, $password, $form_state, $account);
+    }
+    else{
+      $userId = Drupal::service('user.auth')->authenticate($username, $password);
+      $user = User::load($userId);
+      if (isset($user)) {
+        Utility::add_message(t('@username Logged in Successfully!', ['@username' => ucwords($user->getDisplayName())]), 'status');
+      } else {
+        Utility::add_message(t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+      }
+    }
+  }
+  return FALSE;
+}
