@@ -129,7 +129,7 @@ class DrupalLdapForm extends FormBase
         'openldap' => $this->t('OpenLDAP'),
       ],
       '#attributes' => [
-
+        'class' => ['custom-select2'],
       ],
     ];
     $form['drupal_ldap_config']['drupal_ldap_protocol'] = [
@@ -143,7 +143,7 @@ class DrupalLdapForm extends FormBase
         'ldaps://' => $this->t('LDAPS (ldaps://)'),
       ],
       '#attributes' => [
-
+        'class' => ['custom-select2'],
       ],
     ];
     $form['drupal_ldap_config']['drupal_ldap_server_url'] = [
@@ -244,6 +244,9 @@ class DrupalLdapForm extends FormBase
         ],
       ],
       '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_search_base')),
+      '#attributes' => [
+        'class' => ['custom-select2'],
+      ],
     ];
     $form['drupal_ldap_user_mapping']['drupal_ldap_custom_base'] = [
       '#type' => 'textfield',
@@ -284,6 +287,9 @@ class DrupalLdapForm extends FormBase
         'progress' => [
           'message' => 'Updating...',
         ],
+      ],
+      '#attributes' => [
+        'class' => ['custom-select2'],
       ],
     ];
     $form['drupal_ldap_user_mapping']['drupal_ldap_custom_username_attribute'] = [
@@ -492,6 +498,9 @@ class DrupalLdapForm extends FormBase
       '#title' => 'Default Role Mapping',
       '#options' => array_merge(['' => $this->t(' -- Select -- ')], user_role_names()),
       '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_default_role'),
+      '#attributes' => [
+        'class' => ['custom-select2'],
+      ],
     ];
     $form['drupal_ldap_role_mapping']['drupal_ldap_save_role_mapping'] = [
       '#type' => 'submit',

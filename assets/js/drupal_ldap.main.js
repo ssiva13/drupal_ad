@@ -11,6 +11,14 @@
   let custom_username_attribute = $('input#custom_username_attribute'); // used
                                                                         // in
                                                                         // SearchFilterAjax
+  $('.custom-select2').select2({
+    placeholder: 'Select an option',
+    width: "100%",
+    allowClear: true,
+    dropdownAutoWidth: true,
+    theme: "krajee-bs4",
+  });
+
   // disable right click in custom ldap base field
   drupal_ldap_custom_base.bind("contextmenu", function (e) {
     return false;
@@ -64,7 +72,7 @@
           selectedBase = drupal_ldap_custom_base.val()
         }
       });
-      drupal_ldap_search_base.append(new Option("Provide Custom LDAP Search Base", "custom_base")).val(selectedBase)
+      drupal_ldap_search_base.append(new Option("Provide Custom LDAP Search Base", "custom_base")).val(selectedBase) //.css('width', '100%')
     }
   });
   // create custom behaviours for drupal dialog modal beforecreate,
