@@ -2,8 +2,11 @@ drupal_ad.admin:
   version: VERSION
   css:
     layout:
+      assets/css/select2.min.css: {}
+      assets/css/select2-krajee-bs4.min.css: {}
       assets/css/drupal_ldap.admin.css: {}
   js:
+    assets/js/select2.min.js : {}
     assets/js/drupal_ldap.main.js : {}
   dependencies:
     - core/jquery
