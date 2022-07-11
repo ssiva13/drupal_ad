@@ -31,16 +31,14 @@ class DrupalLdapForm extends FormBase
   /**
    * @inheritDoc
    */
-  public function getFormId()
-  {
+  public function getFormId(): string {
     return 'ldap_config_form';
   }
 
   /**
    * @inheritDoc
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_disabled', FALSE)->save();
     $form['markup_library'] = array(
       '#attached' => array(
@@ -76,7 +74,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config'] = [
       '#title' => 'LDAP Configurations',
       '#type' => 'details',
-      '#open' => FALSE,
+      '#open' => TRUE,
       '#group' => 'drupal_ldap_tabs',
       '#attributes' => [
         'class' => ['custom_ldap_form'],
@@ -106,7 +104,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_options'] = [
       '#title' => 'LDAP Sign in Options',
       '#type' => 'details',
-      '#open' => TRUE,
+      '#open' => FALSE,
       '#group' => 'drupal_ldap_tabs',
     ];
     $form['drupal_ldap_role_mapping'] = [
@@ -124,7 +122,7 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config']['drupal_ldap_directory_server'] = [
       '#type' => 'select',
       '#title' => 'Directory Server',
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_directory_server'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_directory_server')),
       '#options' => [
         '' => $this->t('-- Select --'),
         'msad' => $this->t('Microsoft Active Directory'),
@@ -138,7 +136,7 @@ class DrupalLdapForm extends FormBase
       '#type' => 'select',
       '#title' => 'LDAP Protocol',
       '#description' => $this->t("Pick <strong>ldap://</strong> or <strong>ldaps://</strong> from the dropdwon list"),
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_protocol'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_protocol')),
       '#options' => [
         '' => $this->t('-- Select --'),
         'ldap://' => $this->t('LDAP (ldap://)'),
@@ -152,7 +150,7 @@ class DrupalLdapForm extends FormBase
       '#type' => 'textfield',
       '#title' => 'LDAP Server Address',
       '#description' => $this->t("Specify the host name for the LDAP server in the above text field."),
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_url'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_url')),
       '#attributes' => [
         'placeholder' => '127.0.0.1 or domain.com',
       ],
@@ -161,7 +159,7 @@ class DrupalLdapForm extends FormBase
       '#type' => 'textfield',
       '#description' => $this->t("Edit the port number if you have custom port number."),
       '#title' => 'LDAP Server Port',
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_port'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_port')),
       '#attributes' => [
         'placeholder' => '389',
       ],
@@ -170,7 +168,7 @@ class DrupalLdapForm extends FormBase
       '#type' => 'textfield',
       '#description' => $this->t("You can specify the Username of the LDAP server in the either way as follows, <strong>username@domainname</strong> or <strong>Distinguished Name(DN) format</strong>"),
       '#title' => 'Account Username',
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_username'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_username')),
       '#attributes' => [
         'placeholder' => 'admin',
       ],
@@ -178,8 +176,8 @@ class DrupalLdapForm extends FormBase
     $form['drupal_ldap_config']['drupal_ldap_server_password'] = [
       '#type' => 'password',
       '#description' => $this->t("The above username and password will be used to establish the connection to your LDAP server."),
-      '#title' => 'Account Password' . Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_address'),
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_password'),
+      '#title' => 'Account Password',
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_server_password')),
       '#attributes' => [
         'placeholder' => '**********',
       ],
@@ -245,7 +243,7 @@ class DrupalLdapForm extends FormBase
           'message' => 'Updating...',
         ],
       ],
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_search_base'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_search_base')),
     ];
     $form['drupal_ldap_user_mapping']['drupal_ldap_custom_base'] = [
       '#type' => 'textfield',
@@ -258,7 +256,7 @@ class DrupalLdapForm extends FormBase
       '#title' => "Custom LDAP Search Base - Click Here For
             <a data-dialog-type='modal' class='use-ajax ajax--link' data-dialog-options='{&quot;width&quot;:600}' data-ajax-progres='fullscreen' data-ajax-focus=''
             href='". Url::fromRoute('drupal_ad.search_bases_markup')->toString()."' methods='GET' ><strong> Search Bases / DNs</strong> </a>",
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_base'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_base')),
       '#attributes' => [
         'placeholder' => 'cn=Users,dc=domain,dc=com; ou=people,dc=domian,dc=org',
         'readonly' => true,
@@ -269,7 +267,7 @@ class DrupalLdapForm extends FormBase
       '#type' => 'select',
       '#title' => 'Search Filter/Username Attribute',
       '#description' => $this->t("Please make clear that the attributes that we are showing are examples and the actual ones could be different. These should be confirmed with the LDAP Admin."),
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_username_attribute'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_username_attribute')),
       '#options' => [
         '' => $this->t('-- Select --'),
         'samaccountname' => $this->t('sAMAccountName'),
@@ -292,7 +290,7 @@ class DrupalLdapForm extends FormBase
       '#type' => 'textfield',
       '#title' => 'Custom Search Filter/Username Attribute',
       '#id' => 'custom_username_attribute',
-      '#default_value' => Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_username_attribute'),
+      '#default_value' => Utility::decrypt(Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_username_attribute')),
       '#attributes' => [
         'readonly' => true,
         'class' => ['custom--input-ro']
@@ -322,14 +320,14 @@ class DrupalLdapForm extends FormBase
     ];
     $form['drupal_ldap_test_auth']['drupal_ldap_test_username'] = [
       '#type' => 'textfield',
-      '#title' => 'Test Username-'. Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_username_attribute'),
+      '#title' => 'Test Username',
       '#attributes' => [
         'placeholder' => 'Username',
       ],
     ];
     $form['drupal_ldap_test_auth']['drupal_ldap_test_password'] = [
       '#type' => 'password',
-      '#title' => 'Test Password -' . Drupal::config('drupal_ad.settings')->get('drupal_ldap_custom_base'),
+      '#title' => 'Test Password',
       '#attributes' => [
         'placeholder' => 'Password',
       ],
@@ -625,9 +623,9 @@ class DrupalLdapForm extends FormBase
     $ldapConn->setServerName($ldapServerAddress);
     $ldapConnection = $ldapConn->getConnection();
     if ($ldapConnection) {
-      Utility::add_message('Congratulations, you were able to successfully connect to your LDAP Server!', 'status');
+      Utility::add_message(t('Congratulations, you were able to successfully connect to your LDAP Server!'), 'status');
     } else {
-      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+      Utility::add_message(t('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.'), 'error');
     }
   }
 
@@ -646,17 +644,17 @@ class DrupalLdapForm extends FormBase
     $ldapConnection = $ldapConn->getConnection();
     if ($ldapConnection) {
       if ($bind = @ldap_bind($ldapConnection, $ldapConn->getServeUsername(), $ldapConn->getServePassword())) {
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_directory_server', $formData["drupal_ldap_directory_server"])->save();
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_url', $formData["drupal_ldap_server_url"])->save();
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_protocol', $formData["drupal_ldap_protocol"])->save();
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_port', $formData["drupal_ldap_server_port"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_directory_server', Utility::encrypt($formData["drupal_ldap_directory_server"]))->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_url', Utility::encrypt($formData["drupal_ldap_server_url"]))->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_protocol', Utility::encrypt($formData["drupal_ldap_protocol"]))->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_server_port', Utility::encrypt($formData["drupal_ldap_server_port"]))->save();
 
-        Utility::add_message('Congratulations, you were able to successfully connect to your LDAP Server.', 'status');
+        Utility::add_message(t('Congratulations, you were able to successfully connect to your LDAP Server.'), 'status');
       }else{
-        Utility::add_message('Invalid credentials to your LDAP Server, contact the administrator.', 'warning');
+        Utility::add_message(t('Invalid credentials to your LDAP Server, contact the administrator.'), 'warning');
       }
     } else {
-      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+      Utility::add_message(t('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.'), 'error');
     }
   }
 
@@ -670,14 +668,14 @@ class DrupalLdapForm extends FormBase
     $ldapConn = new LdapConn();
     $ldapConnection = $ldapConn->getConnection();
     if ($ldapConnection) {
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_search_base', $formData["drupal_ldap_search_base"])->save();
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_custom_base', $formData["drupal_ldap_custom_base"])->save();
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_username_attribute', $formData["drupal_ldap_username_attribute"])->save();
-        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_custom_username_attribute', $formData["drupal_ldap_custom_username_attribute"])->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_search_base', Utility::encrypt($formData["drupal_ldap_search_base"]))->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_custom_base', Utility::encrypt($formData["drupal_ldap_custom_base"]))->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_username_attribute', Utility::encrypt($formData["drupal_ldap_username_attribute"]))->save();
+        Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_custom_username_attribute', Utility::encrypt($formData["drupal_ldap_custom_username_attribute"]))->save();
 
-        Utility::add_message('Congratulations, LDAP server user mapping saved successfully.', 'status');
+        Utility::add_message(t('Congratulations, LDAP server user mapping saved successfully.'), 'status');
     } else {
-      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+      Utility::add_message(t('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.'), 'error');
     }
   }
 
@@ -691,10 +689,10 @@ class DrupalLdapForm extends FormBase
     $ldapLogin = (new LdapConn())->ldapLogin($formData["drupal_ldap_test_username"], $formData["drupal_ldap_test_password"]);
     if ($ldapLogin->message == "SUCCESS") {
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_mapping_status', 1)->save();
-      Utility::add_message('Congratulations, Test Authentication successful for <strong>'.$formData["drupal_ldap_test_username"] . '</strong>!', 'status');
+      Utility::add_message(t('Congratulations, Test Authentication successful for <strong style="color: #556B2F;"> @username </strong>!', [ '@username' => $formData["drupal_ldap_test_username"] ]), 'status');
     }else{
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_mapping_status', 0)->save();
-      Utility::add_message('Error, User authentated successfully.', 'error');
+      Utility::add_message(t('Error, Test User Authentication failed - <strong style="color: #B22222;"> @ldap_error </strong> ! Fix Error And Try Again !', [ '@ldap_error' => $ldapLogin->messageDetails ]), 'error');
     }
   }
   /**
@@ -714,9 +712,9 @@ class DrupalLdapForm extends FormBase
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_phone_attribute', $formData["drupal_ldap_phone_attribute"])->save();
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_email_domain_attribute', $formData["drupal_ldap_email_domain_attribute"])->save();
 
-      Utility::add_message('Congratulations, LDAP server user attributes mapping saved successfully.', 'status');
+      Utility::add_message(t('Congratulations, LDAP server user attributes mapping saved successfully.'), 'status');
     } else {
-      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+      Utility::add_message(t('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.'), 'error');
     }
   }
   /**
@@ -768,9 +766,9 @@ class DrupalLdapForm extends FormBase
         Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_user_drupal_only');
         Drupal::configFactory()->getEditable('drupal_ad.settings')->clear('drupal_ldap_user_ad_only');
       }
-      Utility::add_message('Congratulations, LDAP sign in options saved successfully.', 'status');
+      Utility::add_message(t('Congratulations, LDAP sign in options saved successfully.'), 'status');
     } else {
-      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+      Utility::add_message(t('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.'), 'error');
     }
   }
   /**
@@ -786,9 +784,9 @@ class DrupalLdapForm extends FormBase
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_enable_role_mapping', $formData["drupal_ldap_enable_role_mapping"])->save();
       Drupal::configFactory()->getEditable('drupal_ad.settings')->set('drupal_ldap_default_role', $formData["drupal_ldap_default_role"])->save();
 
-      Utility::add_message('Congratulations, LDAP server user role mapping saved successfully.', 'status');
+      Utility::add_message(t('Congratulations, LDAP server user role mapping saved successfully.'), 'status');
     } else {
-      Utility::add_message('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.', 'error');
+      Utility::add_message(t('There seems to be an error trying to contact your LDAP server. Please check your configurations or contact the administrator for the same.'), 'error');
     }
   }
 

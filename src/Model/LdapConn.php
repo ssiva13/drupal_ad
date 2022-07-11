@@ -22,15 +22,15 @@ class LdapConn {
   public $search_base;
 
   function __construct() {
-    $this->server_name = \Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_server_address') ? \Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_server_address') : "";
-    $this->server_username = \Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_server_username') ? \Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_server_username') : "";
-    $this->server_password = \Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_server_password') ? \Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_server_password') : "";
+    $this->server_name = Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_server_address') ? Utility::decrypt(Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_server_address')) : "";
+    $this->server_username = Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_server_username') ? Utility::decrypt(Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_server_username')) : "";
+    $this->server_password = Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_server_password') ? Utility::decrypt(Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_server_password')) : "";
 
   }
 
@@ -81,9 +81,9 @@ class LdapConn {
    */
   public function setServerUsername(string $server_username, bool $save = FALSE): void {
     if ($save) {
-      \Drupal::configFactory()
+      Drupal::configFactory()
         ->getEditable('drupal_ad.settings')
-        ->set('drupal_ldap_server_username', $server_username)
+        ->set('drupal_ldap_server_username', Utility::encrypt($server_username))
         ->save();
     }
     $this->server_username = $server_username;
@@ -95,9 +95,9 @@ class LdapConn {
    */
   public function setServerPassword(string $server_password, bool $save = FALSE): void {
     if ($save) {
-      \Drupal::configFactory()
+      Drupal::configFactory()
         ->getEditable('drupal_ad.settings')
-        ->set('drupal_ldap_server_password', $server_password)
+        ->set('drupal_ldap_server_password', Utility::encrypt($server_password))
         ->save();
     }
     $this->server_password = $server_password;
@@ -109,9 +109,9 @@ class LdapConn {
    */
   public function setServerName(string $ldapServerAddress, bool $save = FALSE): void {
     if ($save) {
-      \Drupal::configFactory()
+      Drupal::configFactory()
         ->getEditable('drupal_ad.settings')
-        ->set('drupal_ldap_server_address', $ldapServerAddress)
+        ->set('drupal_ldap_server_address', Utility::encrypt($ldapServerAddress))
         ->save();
     }
     $this->server_name = $ldapServerAddress;
@@ -178,14 +178,14 @@ class LdapConn {
    *
    * @return \Drupal\drupal_ad\Model\Response
    */
-  public function ldapLogin($username, $password) {
+  public function ldapLogin($username, $password): \Drupal\drupal_ad\Model\Response {
     $ldapConnection = $this->getConnection();
     $ldapResponse = new Response();
     if ($ldapConnection) {
-      $searchBase = Drupal::config('drupal_ad.settings')
-        ->get('drupal_ldap_custom_base');
-      $usernameAttribute = Drupal::config('drupal_ad.settings')
-        ->get('drupal_ldap_custom_username_attribute');
+      $searchBase = Utility::decrypt(Drupal::config('drupal_ad.settings')
+        ->get('drupal_ldap_custom_base'));
+      $usernameAttribute = Utility::decrypt(Drupal::config('drupal_ad.settings')
+        ->get('drupal_ldap_custom_username_attribute'));
       $searchFilter = str_replace('?', $username, '(&(objectClass=*)(' . $usernameAttribute . '=?))');
       $searchResult = $userInfo = $userEntry = NULL;
       $userAttributes = $this->getUserAttributes($usernameAttribute);
@@ -211,7 +211,8 @@ class LdapConn {
         else { // search using a string
           if (!@ldap_search($ldapConnection, $searchBase, $searchFilter)) {
             $ldapResponse->status = FALSE;
-            $ldapResponse->message = 'NOT_EXIST';
+            $ldapResponse->message = Response::NOT_EXIST;
+            $ldapResponse->messageDetails = ldap_error($ldapConnection);
             return $ldapResponse;
           }
           [
@@ -234,14 +235,17 @@ class LdapConn {
         }
         $ldapResponse->status = FALSE;
         $ldapResponse->message = Response::NOT_EXIST;
+        $ldapResponse->messageDetails = ldap_error($ldapConnection);
         return $ldapResponse;
       }
       $ldapResponse->status = FALSE;
       $ldapResponse->message = Response::BIND_ERROR;
+      $ldapResponse->messageDetails = ldap_error($ldapConnection);
       return $ldapResponse;
     }
     $ldapResponse->status = FALSE;
     $ldapResponse->message = Response::CONNECTION_ERROR;
+    $ldapResponse->messageDetails = ldap_error($ldapConnection);
     return $ldapResponse;
 
   }
@@ -255,8 +259,8 @@ class LdapConn {
   public function ldapAuthenticate($userDn, $password): Response {
     $this->ldapconn = ldap_connect($this->server_name);
     $this->bind = ldap_bind($this->ldapconn, $userDn, $password);
-    $usernameAttribute = Drupal::config('drupal_ad.settings')
-      ->get('drupal_ldap_custom_username_attribute');
+    $usernameAttribute = Utility::decrypt(Drupal::config('drupal_ad.settings')
+      ->get('drupal_ldap_custom_username_attribute'));
     $searchFilter = str_replace('?', $userDn, '(&(objectClass=*)(' . $usernameAttribute . '=?))');
     $ldapResponse = new Response();
     if ($this->bind) {

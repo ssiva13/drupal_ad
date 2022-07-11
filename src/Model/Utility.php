@@ -18,11 +18,12 @@ class Utility
 
 
   /**
-   * Encrypt.
+   * @param $string
+   * Encrypt string.
+   * @return string
    */
-  public static function encrypt($string)
-  {
-    $key = openssl_random_pseudo_bytes(32);
+  public static function encrypt($string): string {
+    $key = Drupal::config('drupal_ad.settings')->get('drupal_ldap_encryption_token');
     $ivlen = openssl_cipher_iv_length(self::$cipher);
     $iv = openssl_random_pseudo_bytes($ivlen);
     $ciphertext_raw = openssl_encrypt($string, Utility::$cipher, $key, Utility::$options, $iv);
@@ -30,23 +31,26 @@ class Utility
     return base64_encode($iv . $hmac . $ciphertext_raw);
   }
 
+  /**
+   * @param $cipherString
+   *
+   * @return false|string
+   */
   public static function decrypt($cipherString)
   {
-    $key = openssl_random_pseudo_bytes(32);
-    $c = base64_decode($cipherString);
-    $ivlen = openssl_cipher_iv_length(self::$cipher);
-    $iv = substr($c, 0, $ivlen);
-    $hmac = substr($c, $ivlen, self::$sha2len);
-    $ciphertext_raw = substr($c, $ivlen + self::$sha2len);
-    $original_plaintext = openssl_decrypt($ciphertext_raw, self::$cipher, $key, self::$options, $iv);
-    $calcmac = hash_hmac('sha256', $ciphertext_raw, $key, self::$as_binary);
-    if (hash_equals($hmac, $calcmac))// timing attack safe comparison
-    {
-      return $original_plaintext;
-    } else {
-      return '$original_plaintext';
+    if($cipherString) {
+      $key = Drupal::config('drupal_ad.settings')
+        ->get('drupal_ldap_encryption_token');
+      $c = base64_decode($cipherString);
+      $ivlen = openssl_cipher_iv_length(self::$cipher);
+      $iv = substr($c, 0, $ivlen);
+      $hmac = substr($c, $ivlen, self::$sha2len);
+      $ciphertext_raw = substr($c, $ivlen + self::$sha2len);
+      $original_plaintext = openssl_decrypt($ciphertext_raw, self::$cipher, $key, self::$options, $iv);
+      $calcmac = hash_hmac('sha256', $ciphertext_raw, $key, self::$as_binary);
+      return hash_equals($hmac, $calcmac) ? $original_plaintext : 'Decryption Error';
     }
-
+    return '';
   }
 
   /**

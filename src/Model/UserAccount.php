@@ -26,8 +26,8 @@ class UserAccount {
     global $base_url;
     $authResponse = $this->ldapConn->ldapLogin($username, $password);
     if ($authResponse->message === LdapResponse::SUCCESS) {
-      $ldapUsernameAttribute = Drupal::config('drupal_ad.settings')
-        ->get('drupal_ldap_custom_username_attribute');
+      $ldapUsernameAttribute = Utility::decrypt(Drupal::config('drupal_ad.settings')
+        ->get('drupal_ldap_custom_username_attribute'));
       $ldapEmailAttribute = Drupal::config('drupal_ad.settings')
         ->get('drupal_ldap_email_attribute');
       $ldapEmailDomain = Drupal::config('drupal_ad.settings')
@@ -114,7 +114,7 @@ class UserAccount {
         }
 
       }else{
-        Utility::add_message($this->t(' (errrrr  admin login) Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
+        Utility::add_message($this->t('Invalid username or incorrect password. Please try again.'), 'form_error', $form_state);
       }
 
     }
