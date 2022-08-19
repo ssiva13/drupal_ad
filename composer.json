@@ -1,5 +1,5 @@
 {
-  "name": "ssiva/drupal-ad",
+  "name": "ssiva/drupal_ad",
   "description": "Active Directory(LDAP) for Drupal",
   "minimum-stability": "stable",
   "license": "proprietary",
@@ -10,7 +10,6 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
-    "drupal/fontawesome": "^2.23"
+    "php": ">=7.1"
   }
 }
