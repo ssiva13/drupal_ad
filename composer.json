@@ -1,0 +1,16 @@
+{
+  "name": "ssiva/drupal-ad",
+  "description": "Active Directory(LDAP) for Drupal",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Simon Siva",
+      "email": "simonsiva13@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "drupal/fontawesome": "^2.23"
+  }
+}
